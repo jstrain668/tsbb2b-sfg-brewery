@@ -40,16 +40,17 @@ import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//@WebMvcTest(BeerController.class)
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(BeerController.class)
+//@ExtendWith(MockitoExtension.class)
 class BeerControllerTest {
 
-    @Mock
+    @MockBean
     BeerService beerService;
 
-    @InjectMocks
-    BeerController beerController;
+    //@InjectMocks
+    //BeerController beerController;
 
+    @Autowired
     MockMvc mockMvc;
 
     BeerDto validBeer;
@@ -66,9 +67,11 @@ class BeerControllerTest {
                 .createdDate(OffsetDateTime.now())
                 .lastModifiedDate(OffsetDateTime.now())
                 .build();
+    }
 
-        mockMvc = MockMvcBuilders.standaloneSetup(beerController)
-                .setMessageConverters(jackson2HttpMessageConverter()).build();
+    @AfterEach
+    void tearDown() {
+        reset(beerService);
     }
 
     @Test
@@ -82,12 +85,6 @@ class BeerControllerTest {
                 .andExpect(jsonPath("$.beerName", is("Beer1")));
 
     }
-
-    /*
-    @AfterEach
-    void tearDown() {
-        reset(beerService);
-    } */
 
     @Test
     void testGetBeerById() throws Exception {
@@ -156,7 +153,7 @@ class BeerControllerTest {
         }
     }
 
-    public MappingJackson2HttpMessageConverter jackson2HttpMessageConverter(){
+   /* public MappingJackson2HttpMessageConverter jackson2HttpMessageConverter(){
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, true);
@@ -164,6 +161,6 @@ class BeerControllerTest {
 
         objectMapper.registerModule(new JavaTimeModule());
         return new MappingJackson2HttpMessageConverter(objectMapper);
-    }
+    } */
 
 }
